@@ -1,24 +1,41 @@
+//plugins {
+//    // Apply the scala plugin to add support for Scala
+//    id 'scala'
+//}
+//
+//repositories {
+//    // Use jcenter for resolving dependencies.
+//    // You can declare any Maven/Ivy/file repository here.
+//    jcenter()
+//}
+//
+subprojects {
 
+    apply plugin: 'java'
+    apply plugin: 'scala'
 
-plugins {
-    // Apply the scala plugin to add support for Scala
-    id 'scala'
-}
+    group = 'com.example'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '11'
 
-repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
-    jcenter()
-}
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/milestone' }
+    }
 
-dependencies {
+    test {
+        useJUnitPlatform()
+    }
 
-    // Use Scalatest for testing our library
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.scalatest:scalatest_2.12:3.0.8'
+    dependencies {
 
-    // Need scala-xml at test runtime
-    testRuntimeOnly 'org.scala-lang.modules:scala-xml_2.12:1.2.0'
+        // Use Scalatest for testing our library
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.scalatest:scalatest_2.12:3.0.8'
 
-    compile 'org.scala-lang:scala-library:2.11.12'
+        // Need scala-xml at test runtime
+        testRuntimeOnly 'org.scala-lang.modules:scala-xml_2.12:1.2.0'
+
+        compile 'org.scala-lang:scala-library:2.11.12'
+    }
 }

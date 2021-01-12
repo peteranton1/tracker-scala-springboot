@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="create_security_tables_1" author="antonp">
+        <createTable  tableName="user">
+            <column  name="user_id"  type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column  name="username"  type="varchar(100)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column  name="credentials"  type="varchar(100)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column  name="salt"  type="varchar(100)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column  name="status"  type="varchar(10)" >
+                <constraints nullable="true" unique="false"/>
+            </column>
+            <column  name="account_expiry"  type="timestamp" />
+            <column  name="credentials_expiry"  type="timestamp" />
+            <column  name="last_auth"  type="timestamp" />
+        </createTable>
+        <createTable  tableName="role">
+            <column  name="role_id"  type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column  name="role_name"  type="varchar(100)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <createTable  tableName="user_role">
+            <column  name="user_role_id"  type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column  name="role_id"  type="int">
+                <constraints foreignKeyName="ur_r_fk"
+                             referencedTableName="role"
+                             referencedColumnNames="role_id"
+                             nullable="true" />
+            </column>
+            <column  name="user_id"  type="int">
+                <constraints foreignKeyName="ur_u_fk"
+                             referencedTableName="user"
+                             referencedColumnNames="user_id"
+                             nullable="true" />
+            </column>
+        </createTable>
+        <createTable  tableName="privilege">
+            <column  name="priv_id"  type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column  name="role_id"  type="int">
+                <constraints foreignKeyName="rp_r_fk"
+                             referencedTableName="role"
+                             referencedColumnNames="role_id"
+                             nullable="true" />
+            </column>
+            <column  name="privilege"  type="varchar(100)" >
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <sql>
+            INSERT INTO user ( user_id, username, credentials, salt, status,
+                account_expiry, credentials_expiry, last_auth) VALUES (
+                1,'admin','admin','some_salt','ACTIVE',
+                '2031-12-31T23:59:59Z','2031-12-31T23:59:59Z','2020-12-31T23:59:59Z');
+
+            INSERT INTO role (role_id,role_name) VALUES (1,'administrator');
+            INSERT INTO privilege (priv_id,role_id,privilege) VALUES (1,1,'administrator');
+            INSERT INTO user_role (user_role_id, user_id, role_id) VALUES (1,1,1);
+        </sql>
+
+        <rollback>
+            <dropTable tableName="privilege" />
+            <dropTable tableName="user_role" />
+            <dropTable tableName="role" />
+            <dropTable tableName="user" />
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
